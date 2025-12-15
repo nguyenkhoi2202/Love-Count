@@ -1,9 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../utils/love_utils.dart';
+import '../utils/quote_utils.dart';
+import '../utils/background_utils.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  late String quote;
+
+  @override
+  void initState() {
+    super.initState();
+
+    quote = QuoteUtils.randomQuote();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -13,9 +29,9 @@ class HomeScreen extends StatelessWidget {
 
     return Scaffold(
       body: Container(
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           image: DecorationImage(
-            image: AssetImage('assets/images/img9.jpg'),
+            image: AssetImage(BackgroundUtils.getBackgroundByDay()),
             fit: BoxFit.cover,
           ),
         ),
@@ -58,6 +74,17 @@ class HomeScreen extends StatelessWidget {
                     'Còn $nextMilestone ngày nữa đến cột mốc tiếp theo 💕',
                     style: const TextStyle(color: Colors.white70),
                   ),
+                const SizedBox(height: 20),
+                // Phần Random quote
+                Text(
+                  quote,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    fontStyle: FontStyle.italic,
+                    color: Colors.white70,
+                    fontSize: 16,
+                  ),
+                ),
               ],
             ),
           ),
