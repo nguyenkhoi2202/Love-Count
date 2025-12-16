@@ -8,7 +8,12 @@ class NotificationService {
 
   static Future<void> init() async {
     const android = AndroidInitializationSettings('@mipmap/ic_launcher');
-    const ios = DarwinInitializationSettings();
+
+    const ios = DarwinInitializationSettings(
+      requestAlertPermission: true,
+      requestBadgePermission: true,
+      requestSoundPermission: true,
+    );
 
     const settings = InitializationSettings(android: android, iOS: ios);
 
@@ -17,6 +22,7 @@ class NotificationService {
   }
 
   static Future<void> scheduleMonthlyAnniversary() async {
+    await _plugin.cancel(1);
     await _plugin.zonedSchedule(
       1,
       'Kỷ niệm tình yêu ❤️',

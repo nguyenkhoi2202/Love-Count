@@ -51,7 +51,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                 const SizedBox(height: 16),
                 Icon(Icons.favorite, color: Colors.pinkAccent, size: 90)
-                    .animate(onPlay: (c) => c.repeat())
+                    .animate()
+                    .fadeIn(duration: 400.ms)
                     .scaleXY(begin: 1, end: 1.2, duration: 800.ms)
                     .then()
                     .scaleXY(begin: 1.2, end: 1, duration: 800.ms),

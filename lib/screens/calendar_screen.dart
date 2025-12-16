@@ -13,6 +13,7 @@ class CalendarScreen extends StatefulWidget {
 class _CalendarScreenState extends State<CalendarScreen> {
   final storage = StorageService();
   List<ImportantDay> days = [];
+  DateTime _selectedDay = DateTime.now();
 
   @override
   void initState() {
@@ -64,11 +65,15 @@ class _CalendarScreenState extends State<CalendarScreen> {
     return Scaffold(
       appBar: AppBar(title: const Text('Lịch tình yêu')),
       body: TableCalendar(
-        focusedDay: DateTime.now(),
+        focusedDay: _selectedDay,
+        selectedDayPredicate: (day) => isSameDay(day, _selectedDay),
         firstDay: DateTime(2000),
         lastDay: DateTime(2100),
         eventLoader: eventsForDay,
-        onDaySelected: (selectedDay, _) => addDay(selectedDay),
+        onDaySelected: (selectedDay, focusedDay) {
+          setState(() => _selectedDay = selectedDay);
+          addDay(selectedDay);
+        },
       ),
     );
   }
