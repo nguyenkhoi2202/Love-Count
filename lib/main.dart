@@ -5,7 +5,7 @@ import 'services/notification_service.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await NotificationService.init();
-  await NotificationService.scheduleMonthlyAnniversary();
+  //await NotificationService.scheduleMonthlyAnniversary();
   runApp(const LoveApp());
 }
 

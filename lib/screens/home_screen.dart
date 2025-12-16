@@ -3,6 +3,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import '../utils/love_utils.dart';
 import '../utils/quote_utils.dart';
 import '../utils/background_utils.dart';
+import '../services/notification_service.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -19,6 +20,11 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
 
     quote = QuoteUtils.randomQuote();
+    _scheduleOnce();
+  }
+
+  Future<void> _scheduleOnce() async {
+    await NotificationService.scheduleMonthlyAnniversary();
   }
 
   @override
