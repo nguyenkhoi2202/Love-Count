@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'screens/home_screen.dart';
-import 'services/notification_service.dart';
 
-void main() async {
+void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  await NotificationService.init();
+  //NotificationService.init();
   //await NotificationService.scheduleMonthlyAnniversary();
   runApp(const LoveApp());
 }

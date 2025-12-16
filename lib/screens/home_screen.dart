@@ -14,19 +14,29 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   late String quote;
-  bool _scheduled = false;
+  bool _notificationInitialized = false;
 
   @override
   void initState() {
     super.initState();
     quote = QuoteUtils.randomQuote();
-    _scheduleOnce();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _initNotificationSafe();
+    });
   }
 
-  Future<void> _scheduleOnce() async {
-    if (_scheduled) return;
-    _scheduled = true;
-    await NotificationService.scheduleMonthlyAnniversary();
+  Future<void> _initNotificationSafe() async {
+    if (_notificationInitialized) return;
+    _notificationInitialized = true;
+
+    try {
+      await NotificationService.init();
+      await NotificationService.scheduleMonthlyAnniversary();
+    } catch (e) {
+      // iOS reboot safety: nuốt crash
+      debugPrint('Notification init skipped: $e');
+    }
   }
 
   @override

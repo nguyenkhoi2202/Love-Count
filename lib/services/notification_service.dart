@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
@@ -5,8 +6,11 @@ import '../utils/love_utils.dart';
 
 class NotificationService {
   static final _plugin = FlutterLocalNotificationsPlugin();
+  static bool _initialized = false;
 
   static Future<void> init() async {
+    if (_initialized) return;
+    _initialized = true;
     const android = AndroidInitializationSettings('@mipmap/ic_launcher');
 
     const ios = DarwinInitializationSettings(
@@ -22,31 +26,33 @@ class NotificationService {
   }
 
   static Future<void> scheduleMonthlyAnniversary() async {
-    final pending = await _plugin.pendingNotificationRequests();
+    try {
+      final pending = await _plugin.pendingNotificationRequests();
+      if (pending.any((n) => n.id == 1)) return;
 
-    if (pending.any((n) => n.id == 1)) {
-      return;
-    }
-
-    await _plugin.zonedSchedule(
-      1,
-      'Kỷ niệm tình yêu ❤️',
-      _message(),
-      _next12th(),
-      const NotificationDetails(
-        android: AndroidNotificationDetails(
-          'love_channel',
-          'Love Anniversary',
-          importance: Importance.max,
-          priority: Priority.high,
+      await _plugin.zonedSchedule(
+        1,
+        'Kỷ niệm tình yêu ❤️',
+        _message(),
+        _next12th(),
+        const NotificationDetails(
+          android: AndroidNotificationDetails(
+            'love_channel',
+            'Love Anniversary',
+            importance: Importance.max,
+            priority: Priority.high,
+          ),
+          iOS: DarwinNotificationDetails(),
         ),
-        iOS: DarwinNotificationDetails(),
-      ),
-      androidAllowWhileIdle: true,
-      matchDateTimeComponents: DateTimeComponents.dayOfMonthAndTime,
-      uiLocalNotificationDateInterpretation:
-          UILocalNotificationDateInterpretation.absoluteTime,
-    );
+        androidAllowWhileIdle: true,
+        matchDateTimeComponents: DateTimeComponents.dayOfMonthAndTime,
+        uiLocalNotificationDateInterpretation:
+            UILocalNotificationDateInterpretation.absoluteTime,
+      );
+    } catch (e) {
+      // iOS reboot crash prevention
+      debugPrint('Schedule skipped: $e');
+    }
   }
 
   static tz.TZDateTime _next12th() {
