@@ -14,16 +14,18 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   late String quote;
+  bool _scheduled = false;
 
   @override
   void initState() {
     super.initState();
-
     quote = QuoteUtils.randomQuote();
     _scheduleOnce();
   }
 
   Future<void> _scheduleOnce() async {
+    if (_scheduled) return;
+    _scheduled = true;
     await NotificationService.scheduleMonthlyAnniversary();
   }
 

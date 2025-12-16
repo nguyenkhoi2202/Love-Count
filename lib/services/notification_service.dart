@@ -24,8 +24,9 @@ class NotificationService {
   static Future<void> scheduleMonthlyAnniversary() async {
     final pending = await _plugin.pendingNotificationRequests();
 
-    // Nếu đã tồn tại notification id = 1 thì không schedule lại
-    if (pending.any((n) => n.id == 1)) return;
+    if (pending.any((n) => n.id == 1)) {
+      return;
+    }
 
     await _plugin.zonedSchedule(
       1,
