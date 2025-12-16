@@ -12,27 +12,31 @@ class NotificationService {
     if (_initialized) return;
     _initialized = true;
 
-    // INIT timezone ĐÚNG CÁCH
+    // 1️⃣ Init timezone
     tz.initializeTimeZones();
     final String localTz = await FlutterTimezone.getLocalTimezone();
     tz.setLocalLocation(tz.getLocation(localTz));
 
+    // 2️⃣ Init notification
     const android = AndroidInitializationSettings('@mipmap/ic_launcher');
-
-    const ios = DarwinInitializationSettings(
-      requestAlertPermission: true,
-      requestBadgePermission: true,
-      requestSoundPermission: true,
-    );
+    const ios = DarwinInitializationSettings();
 
     const settings = InitializationSettings(android: android, iOS: ios);
 
     await _plugin.initialize(settings);
+
+    // 3️⃣ REQUEST PERMISSION BẮT BUỘC (iOS)
+    final iosPlugin = _plugin
+        .resolvePlatformSpecificImplementation<
+          IOSFlutterLocalNotificationsPlugin
+        >();
+
+    await iosPlugin?.requestPermissions(alert: true, badge: true, sound: true);
   }
 
   static Future<void> scheduleMonthlyAnniversary() async {
-    final pending = await _plugin.pendingNotificationRequests();
-    if (pending.any((n) => n.id == 1)) return;
+    // ❗ BẮT BUỘC xoá lịch cũ
+    await _plugin.cancel(1);
 
     await _plugin.zonedSchedule(
       1,
@@ -46,7 +50,7 @@ class NotificationService {
           importance: Importance.max,
           priority: Priority.high,
         ),
-        iOS: DarwinNotificationDetails(),
+        iOS: DarwinNotificationDetails(presentAlert: true, presentSound: true),
       ),
       androidAllowWhileIdle: true,
       matchDateTimeComponents: DateTimeComponents.dayOfMonthAndTime,
@@ -57,10 +61,10 @@ class NotificationService {
 
   static tz.TZDateTime _next12th() {
     final now = tz.TZDateTime.now(tz.local);
-    var scheduled = tz.TZDateTime(tz.local, now.year, now.month, 12, 9);
+    var scheduled = tz.TZDateTime(tz.local, now.year, now.month, 16, 11);
 
     if (scheduled.isBefore(now)) {
-      scheduled = tz.TZDateTime(tz.local, now.year, now.month + 1, 12, 9);
+      scheduled = tz.TZDateTime(tz.local, now.year, now.month + 1, 16, 11);
     }
     return scheduled;
   }
