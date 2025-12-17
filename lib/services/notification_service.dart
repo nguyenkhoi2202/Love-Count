@@ -1,14 +1,13 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
+import '../utils/love_utils.dart';
 
 class NotificationService {
-  static final FlutterLocalNotificationsPlugin _plugin =
-      FlutterLocalNotificationsPlugin();
-
+  static final _plugin = FlutterLocalNotificationsPlugin();
   static bool _initialized = false;
 
-  static Future<void> _init() async {
+  static Future<void> initAndScheduleDaily() async {
     if (_initialized) return;
     _initialized = true;
 
@@ -16,57 +15,85 @@ class NotificationService {
     tz.setLocalLocation(tz.getLocation('Asia/Ho_Chi_Minh'));
 
     const android = AndroidInitializationSettings('@mipmap/ic_launcher');
-
     const ios = DarwinInitializationSettings(
-      requestAlertPermission: false,
-      requestBadgePermission: false,
-      requestSoundPermission: false,
+      requestAlertPermission: true,
+      requestSoundPermission: true,
+      requestBadgePermission: true,
     );
 
-    const settings = InitializationSettings(android: android, iOS: ios);
-    await _plugin.initialize(settings);
+    await _plugin.initialize(
+      const InitializationSettings(android: android, iOS: ios),
+    );
+
+    await _scheduleNext30Days();
   }
 
-  /// 🚨 CHỈ GỌI TỪ NÚT BẤM
-  static Future<void> requestPermissionAndScheduleFixedAlarm() async {
-    await _init();
+  static Future<void> _scheduleNext30Days() async {
+    final now = tz.TZDateTime.now(tz.local);
+    final milestoneDate = LoveUtils.nextMilestoneDate();
 
-    final iosPlugin = _plugin
-        .resolvePlatformSpecificImplementation<
-          IOSFlutterLocalNotificationsPlugin
-        >();
+    for (int i = 0; i < 30; i++) {
+      final day = now.add(Duration(days: i));
+      final scheduledTime = tz.TZDateTime(
+        tz.local,
+        day.year,
+        day.month,
+        day.day,
+        10, // ⏰ 7:00 sáng
+        46,
+      );
 
-    final granted = await iosPlugin?.requestPermissions(
-      alert: true,
-      badge: true,
-      sound: true,
-    );
+      if (scheduledTime.isBefore(now)) continue;
 
-    if (granted != true) return;
+      final daysLeft = LoveUtils.startLoveDate
+          .add(Duration(days: LoveUtils.milestones.last))
+          .difference(day)
+          .inDays;
 
-    final alarmTime = tz.TZDateTime(tz.local, 2025, 12, 17, 10, 0);
+      // 🔔 THÔNG BÁO HẰNG NGÀY
+      await _plugin.zonedSchedule(
+        1000 + i,
+        '💖 Nhắc nhở tình yêu',
+        'Còn ${LoveUtils.daysToNextMilestone()} ngày nữa là kỉ niệm ${LoveUtils.daysToNextMilestone()} ngày yêu nhau ❤️',
+        scheduledTime,
+        _details(),
+        androidAllowWhileIdle: true,
+        uiLocalNotificationDateInterpretation:
+            UILocalNotificationDateInterpretation.absoluteTime,
+      );
 
-    await _plugin.zonedSchedule(
-      100,
-      '⏰ Báo thức tình yêu',
-      'Dậy đi, hôm nay là ngày đặc biệt ❤️',
-      alarmTime,
-      const NotificationDetails(
-        android: AndroidNotificationDetails(
-          'alarm_channel',
-          'Alarm',
-          importance: Importance.max,
-          priority: Priority.high,
-          fullScreenIntent: true,
-        ),
-        iOS: DarwinNotificationDetails(
-          presentSound: true,
-          interruptionLevel: InterruptionLevel.critical,
-        ),
+      // 🎉 NẾU LÀ NGÀY ĐẶC BIỆT
+      if (milestoneDate != null &&
+          day.year == milestoneDate.year &&
+          day.month == milestoneDate.month &&
+          day.day == milestoneDate.day) {
+        await _plugin.zonedSchedule(
+          2000 + i,
+          '🎉 NGÀY ĐẶC BIỆT ❤️',
+          'Hôm nay là ngày kỉ niệm yêu nhau của Khôi và Vy 💕',
+          scheduledTime.add(const Duration(minutes: 1)),
+          _details(),
+          androidAllowWhileIdle: true,
+          uiLocalNotificationDateInterpretation:
+              UILocalNotificationDateInterpretation.absoluteTime,
+        );
+      }
+    }
+  }
+
+  static NotificationDetails _details() {
+    return const NotificationDetails(
+      android: AndroidNotificationDetails(
+        'love_channel',
+        'Love Notifications',
+        importance: Importance.max,
+        priority: Priority.high,
       ),
-      androidAllowWhileIdle: true,
-      uiLocalNotificationDateInterpretation:
-          UILocalNotificationDateInterpretation.absoluteTime,
+      iOS: DarwinNotificationDetails(
+        presentAlert: true,
+        presentSound: true,
+        interruptionLevel: InterruptionLevel.timeSensitive,
+      ),
     );
   }
 }

@@ -20,6 +20,7 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     quote = QuoteUtils.randomQuote();
+    NotificationService.initAndScheduleDaily();
   }
 
   @override
@@ -90,16 +91,16 @@ class _HomeScreenState extends State<HomeScreen> {
                     style: const TextStyle(color: Colors.white70),
                   ),
                 const SizedBox(height: 20),
-                ElevatedButton(
-                  onPressed: () async {
-                    await NotificationService.requestPermissionAndScheduleFixedAlarm();
+                // ElevatedButton(
+                //   onPressed: () async {
+                //     await NotificationService.requestPermissionAndScheduleFixedAlarm();
 
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Báo thức đã được đặt ❤️')),
-                    );
-                  },
-                  child: const Text('Đặt báo thức đặc biệt'),
-                ),
+                //     ScaffoldMessenger.of(context).showSnackBar(
+                //       const SnackBar(content: Text('Báo thức đã được đặt ❤️')),
+                //     );
+                //   },
+                //   child: const Text('Đặt báo thức đặc biệt'),
+                // ),
                 // Phần Random quote
                 Text(
                   quote,
