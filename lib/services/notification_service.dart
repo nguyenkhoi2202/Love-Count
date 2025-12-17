@@ -40,7 +40,7 @@ class NotificationService {
         day.month,
         day.day,
         10, // ⏰ 7:00 sáng
-        46,
+        51,
       );
 
       if (scheduledTime.isBefore(now)) continue;
