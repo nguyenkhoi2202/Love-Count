@@ -3,8 +3,6 @@ import 'screens/home_screen.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  //NotificationService.init();
-  //await NotificationService.scheduleMonthlyAnniversary();
   runApp(const LoveApp());
 }
 

@@ -20,23 +20,6 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     quote = QuoteUtils.randomQuote();
-
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _initNotificationSafe();
-    });
-  }
-
-  Future<void> _initNotificationSafe() async {
-    if (_notificationInitialized) return;
-    _notificationInitialized = true;
-
-    try {
-      await NotificationService.init();
-      //await NotificationService.scheduleMonthlyAnniversary();
-    } catch (e) {
-      // iOS reboot safety: nuốt crash
-      debugPrint('Notification init skipped: $e');
-    }
   }
 
   @override
@@ -109,8 +92,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 const SizedBox(height: 20),
                 ElevatedButton(
                   onPressed: () async {
-                    await NotificationService.init();
-                    await NotificationService.scheduleFixedAlarm();
+                    await NotificationService.requestPermissionAndScheduleFixedAlarm();
 
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(content: Text('Báo thức đã được đặt ❤️')),
