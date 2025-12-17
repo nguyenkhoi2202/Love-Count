@@ -16,10 +16,13 @@ class _HomeScreenState extends State<HomeScreen> {
   late String quote;
 
   @override
-  void initState() async{
+  void initState() {
     super.initState();
     quote = QuoteUtils.randomQuote();
-    await NotificationService.initAndScheduleDaily();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      NotificationService.instance.scheduleDailyLoveNotifications();
+    });
   }
 
   @override
