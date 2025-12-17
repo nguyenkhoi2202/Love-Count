@@ -68,12 +68,18 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ),
                 const SizedBox(height: 16),
-                Icon(Icons.favorite, color: Colors.pinkAccent, size: 90)
-                    .animate()
-                    .fadeIn(duration: 400.ms)
-                    .scaleXY(begin: 1, end: 1.2, duration: 800.ms)
-                    .then()
-                    .scaleXY(begin: 1.2, end: 1, duration: 800.ms),
+                Icon(
+                  Icons.favorite,
+                  color: Colors.pinkAccent,
+                  size: 90,
+                )
+                .animate(
+                  onPlay: (controller) => controller.repeat(), // lặp liên tục
+                )
+                //.fadeIn(duration: 400.ms)
+                .scaleXY(begin: 1, end: 1.15, duration: 600.ms, curve: Curves.easeInOut)
+                .then()
+                .scaleXY(begin: 1.15, end: 1, duration: 600.ms, curve: Curves.easeInOut),
                 const SizedBox(height: 16),
                 Text(
                   '$days ngày yêu nhau',
