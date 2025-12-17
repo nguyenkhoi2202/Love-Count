@@ -32,7 +32,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
     try {
       await NotificationService.init();
-      await NotificationService.scheduleMonthlyAnniversary();
+      //await NotificationService.scheduleMonthlyAnniversary();
     } catch (e) {
       // iOS reboot safety: nuốt crash
       debugPrint('Notification init skipped: $e');
@@ -68,18 +68,25 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ),
                 const SizedBox(height: 16),
-                Icon(
-                  Icons.favorite,
-                  color: Colors.pinkAccent,
-                  size: 90,
-                )
-                .animate(
-                  onPlay: (controller) => controller.repeat(), // lặp liên tục
-                )
-                //.fadeIn(duration: 400.ms)
-                .scaleXY(begin: 1, end: 1.15, duration: 600.ms, curve: Curves.easeInOut)
-                .then()
-                .scaleXY(begin: 1.15, end: 1, duration: 600.ms, curve: Curves.easeInOut),
+                Icon(Icons.favorite, color: Colors.pinkAccent, size: 90)
+                    .animate(
+                      onPlay: (controller) =>
+                          controller.repeat(), // lặp liên tục
+                    )
+                    //.fadeIn(duration: 400.ms)
+                    .scaleXY(
+                      begin: 1,
+                      end: 1.15,
+                      duration: 600.ms,
+                      curve: Curves.easeInOut,
+                    )
+                    .then()
+                    .scaleXY(
+                      begin: 1.15,
+                      end: 1,
+                      duration: 600.ms,
+                      curve: Curves.easeInOut,
+                    ),
                 const SizedBox(height: 16),
                 Text(
                   '$days ngày yêu nhau',
@@ -100,6 +107,17 @@ class _HomeScreenState extends State<HomeScreen> {
                     style: const TextStyle(color: Colors.white70),
                   ),
                 const SizedBox(height: 20),
+                ElevatedButton(
+                  onPressed: () async {
+                    await NotificationService.init();
+                    await NotificationService.scheduleFixedAlarm();
+
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Báo thức đã được đặt ❤️')),
+                    );
+                  },
+                  child: const Text('Đặt báo thức đặc biệt'),
+                ),
                 // Phần Random quote
                 Text(
                   quote,
